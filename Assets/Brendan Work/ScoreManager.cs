@@ -1,10 +1,10 @@
+using TMPro; // Add this for TextMeshPro support
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
-    public Text scoreText; // Assign a UI Text element for score
-    public Text highScoreText; // Assign a UI Text element for high score
+    public TextMeshProUGUI scoreText; // Change from Text to TextMeshProUGUI
+    public TextMeshProUGUI highScoreText; // Same for high score text
     public float distanceTraveled = 0f; // Distance traveled
     public float speed = 5f; // Movement speed of the player
     private float highScore = 0f;
