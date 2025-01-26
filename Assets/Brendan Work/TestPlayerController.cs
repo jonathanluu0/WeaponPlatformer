@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class TestPlayerController : MonoBehaviour
 {
     public float jumpForce = 5f; // Adjust for jumping power
     private Rigidbody2D rb;
