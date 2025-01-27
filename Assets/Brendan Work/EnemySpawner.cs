@@ -2,13 +2,10 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab; // Assign your enemy prefab
-    public float spawnInterval = 2f; // Time between enemy spawns
-    public float spawnHeightMin = -2f; // Minimum spawn height
-    public float spawnHeightMax = 2f; // Maximum spawn height
-    public float spawnOffsetX = 10f; // How far off-screen enemies spawn
-    public float enemySpeed = 5f; // Speed at which enemies move left
-
+    public GameObject enemyPrefab; // Assign your enemy prefab here
+    public float spawnInterval = 2f; // Time between spawns
+    public float spawnHeight = 3f; // Random vertical range for spawning
+    public float spawnXPosition = 10f; // Spawn point on the X-axis
     private float timer = 0f;
 
     void Update()
@@ -24,22 +21,8 @@ public class EnemySpawner : MonoBehaviour
 
     void SpawnEnemy()
     {
-        // Randomize the spawn height
-        float randomY = Random.Range(spawnHeightMin, spawnHeightMax);
-
-        // Spawn the enemy off-screen to the right
-        Vector3 spawnPosition = new Vector3(Camera.main.transform.position.x + spawnOffsetX, randomY, 0);
-
-        // Instantiate the enemy
-        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-
-        // Set the enemy's movement
-        Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            rb = enemy.AddComponent<Rigidbody2D>();
-        }
-        rb.isKinematic = true; // Ensures physics don’t interfere
-        rb.velocity = new Vector2(-enemySpeed, 0); // Move left at a constant speed
+        float randomY = Random.Range(-spawnHeight, spawnHeight);
+        Vector3 spawnPosition = new Vector3(spawnXPosition, randomY, 0);
+        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
     }
 }
