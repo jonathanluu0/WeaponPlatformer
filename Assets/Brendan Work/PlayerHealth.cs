@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; // Import SceneManager
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class PlayerHealth : MonoBehaviour
     public Sprite fullHeart;
     public Sprite emptyHeart;
 
-    private bool isDead = false; // Prevent multiple death calls
+    private bool isDead = false; // Prevent multiple deaths
 
     void Start()
     {
@@ -20,7 +21,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return; // Prevent multiple deaths
+        if (isDead) return; // Prevent taking damage after death
 
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
@@ -53,14 +54,14 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        Debug.Log("Game Over! Exiting Game...");
+        Debug.Log("Game Over! Loading Game Over Scene...");
 
-        // **Exit the application**
-        Application.Quit();
+        // **2. Load Game Over Scene after delay**
+        Invoke("LoadGameOverScene", 1.5f); // Wait 1.5 seconds before switching scenes
+    }
 
-        // **Exit play mode in Unity Editor**
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+    void LoadGameOverScene()
+    {
+        SceneManager.LoadScene("Game Over"); // **Replace with your actual Game Over scene name**
     }
 }
