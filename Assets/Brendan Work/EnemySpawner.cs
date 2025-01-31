@@ -2,44 +2,39 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab; // Assign your enemy prefab
-    public float spawnInterval = 2f; // Time between enemy spawns
-    public float spawnHeightMin = -2f; // Minimum spawn height
-    public float spawnHeightMax = 2f; // Maximum spawn height
-    public float spawnOffsetX = 10f; // How far off-screen enemies spawn
-    public float enemySpeed = 5f; // Speed at which enemies move left
+    public GameObject enemyPrefab;
+    public float spawnRate = 2f; // Time between spawns
+    public float enemySpeed = 2f;
+    public float spawnYMin = -6f;
+    public float spawnYMax = 4f;
 
-    private float timer = 0f;
+    private float nextSpawnTime;
 
     void Update()
     {
-        timer += Time.deltaTime;
-
-        if (timer >= spawnInterval)
+        if (Time.time >= nextSpawnTime)
         {
             SpawnEnemy();
-            timer = 0f;
+            nextSpawnTime = Time.time + spawnRate;
         }
     }
 
     void SpawnEnemy()
     {
-        // Randomize the spawn height
-        float randomY = Random.Range(spawnHeightMin, spawnHeightMax);
+        // **Spawn enemies off the right side of the screen**
+        float screenRightEdge = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0)).x + 2f;
+        float randomY = Random.Range(spawnYMin, spawnYMax);
 
-        // Spawn the enemy off-screen to the right
-        Vector3 spawnPosition = new Vector3(Camera.main.transform.position.x + spawnOffsetX, randomY, 0);
-
-        // Instantiate the enemy
+        Vector3 spawnPosition = new Vector3(screenRightEdge, randomY, 0);
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
-        // Set the enemy's movement
         Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
-        if (rb == null)
+        if (rb != null)
         {
-            rb = enemy.AddComponent<Rigidbody2D>();
+            rb.velocity = Vector2.left * enemySpeed;
         }
-        rb.isKinematic = true; // Ensures physics don’t interfere
-        rb.velocity = new Vector2(-enemySpeed, 0); // Move left at a constant speed
+
+        // **Attach despawn script to enemy**
+        enemy.AddComponent<EnemyDestroyer>();
     }
 }
