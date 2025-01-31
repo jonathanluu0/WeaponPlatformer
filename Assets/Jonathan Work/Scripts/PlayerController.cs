@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
@@ -8,18 +8,23 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f; // Automatic forward speed
-    public float jumpForce = 10f; // Jump force for jumping
-    private int jumpCount = 0; // Track how many times the player has jumped
-    public int maxJumps = 2; // Maximum number of jumps allowed (double jump)
+    public float moveSpeed = 5f; 
+    public float jumpForce = 10f; 
+    private int jumpCount = 0; 
+    public int maxJumps = 2; 
     public bool canDestroyEnemies = false;
 
-    private float originalMoveSpeed; // Store the original move speed
+    [Header("Shield Settings")]
+    private bool isShieldActive = false; 
+    private bool isSpeedBoostActive = false;
+    private int shieldLives = 0; 
+
+    private float originalMoveSpeed; 
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        originalMoveSpeed = moveSpeed; // Store the original move speed
+        originalMoveSpeed = moveSpeed; 
     }
 
     void Update()
@@ -34,7 +39,6 @@ public class PlayerController : MonoBehaviour
 
     private void MoveForward()
     {
-        // Move the player forward automatically
         rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
     }
 
@@ -49,35 +53,59 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        // Apply vertical velocity for jumping
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Reset jump count when touching a surface
         jumpCount = 0;
-        if (collision.gameObject.CompareTag("Enemy")) {
-            if (canDestroyEnemies) { 
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            // If speed boost is active, destroy the enemy
+            if (isSpeedBoostActive)
+            {
                 Destroy(collision.gameObject);
-            } else {
+            }
+            // If shield is active, destroy the enemy and reduce shield lives
+            else if (isShieldActive && shieldLives > 0)
+            {
+                Destroy(collision.gameObject);
+                shieldLives--;
+
+                if (shieldLives <= 0)
+                {
+                    isShieldActive = false;
+                }
+            }
+            // If neither shield nor speed boost is active, reload the scene
+            else if (!isShieldActive && !isSpeedBoostActive)
+            {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
-
         }
-        
     }
 
-    // Method to increase speed
+    public void ActivateShield(int lives)
+    {
+        isShieldActive = true;
+        shieldLives = lives;
+    }
+
     public void IncreaseSpeed(float multiplier, float duration)
     {
-        StartCoroutine(SpeedBoost(multiplier, duration));
+        if (!isSpeedBoostActive) // Prevent overlapping speed boosts
+        {
+            isSpeedBoostActive = true;
+            StartCoroutine(SpeedBoost(multiplier, duration));
+        }
     }
 
     private IEnumerator SpeedBoost(float multiplier, float duration)
     {
-        moveSpeed *= multiplier; // Increase the speed
+        moveSpeed *= multiplier; 
         yield return new WaitForSeconds(duration);
-        moveSpeed = originalMoveSpeed; // Reset the speed
+        moveSpeed = originalMoveSpeed; 
+        isSpeedBoostActive = false; // Reset the flag after the duration ends
     }
 }

@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class FirePowerUp : MonoBehaviour
 {
-    public float speedIncrease = 1.5f;  // Speed multiplier (e.g., 50% more speed)
-    public float powerUpDuration = 5f;  // Duration of power-up effect
+    public float speedIncrease = 1.5f;  
+    public float powerUpDuration = 5f;  
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Detect if the slime collides with a power-up object
+        Debug.Log("Speed Power Up triggered!");
         if (other.CompareTag("Player"))
         {
-            PlayerController playerController = other.GetComponent<PlayerController>(); // Get PlayerController component
+            PlayerController playerController = other.GetComponent<PlayerController>(); 
             if (playerController != null)
             {
                 playerController.IncreaseSpeed(speedIncrease, powerUpDuration);
