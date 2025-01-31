@@ -3,9 +3,11 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    public float spawnRate = 2f; // Time between spawns
+    public float minSpawnRate = 1.5f; // Minimum time between spawns
+    public float maxSpawnRate = 3.5f; // Maximum time between spawns
     public float enemySpeed = 2f;
-    public float spawnYMin = -6f;
+
+    public float spawnYMin = -6f; 
     public float spawnYMax = 4f;
 
     private float nextSpawnTime;
@@ -15,13 +17,12 @@ public class EnemySpawner : MonoBehaviour
         if (Time.time >= nextSpawnTime)
         {
             SpawnEnemy();
-            nextSpawnTime = Time.time + spawnRate;
+            nextSpawnTime = Time.time + Random.Range(minSpawnRate, maxSpawnRate); // **Randomize next spawn time**
         }
     }
 
     void SpawnEnemy()
     {
-        // **Spawn enemies off the right side of the screen**
         float screenRightEdge = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0)).x + 2f;
         float randomY = Random.Range(spawnYMin, spawnYMax);
 
@@ -34,7 +35,6 @@ public class EnemySpawner : MonoBehaviour
             rb.velocity = Vector2.left * enemySpeed;
         }
 
-        // **Attach despawn script to enemy**
         enemy.AddComponent<EnemyDestroyer>();
     }
 }
