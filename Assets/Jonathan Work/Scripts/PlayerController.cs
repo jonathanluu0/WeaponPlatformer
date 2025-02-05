@@ -19,11 +19,17 @@ public class PlayerController : MonoBehaviour
     private bool isSpeedBoostActive = false;
     private int shieldLives = 0; 
 
+    [Header("Audio")]
+    private AudioSource audioSource;
+    public AudioClip jumpSound; 
+    public AudioClip hitEnemySound;
+
     private float originalMoveSpeed; 
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
         originalMoveSpeed = moveSpeed; 
     }
 
@@ -54,6 +60,10 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+         if (jumpSound != null)
+        {
+            audioSource.PlayOneShot(jumpSound);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -62,6 +72,10 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
+            if (hitEnemySound != null)
+            {
+                audioSource.PlayOneShot(hitEnemySound);
+            }
             // If speed boost is active, destroy the enemy
             if (isSpeedBoostActive)
             {
@@ -90,6 +104,7 @@ public class PlayerController : MonoBehaviour
     {
         isShieldActive = true;
         shieldLives = lives;
+        Debug.Log("Shield Activated! Lives: " + shieldLives);
     }
 
     public void IncreaseSpeed(float multiplier, float duration)
